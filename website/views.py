@@ -2,7 +2,8 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.shortcuts import render,redirect
 from .forms import UploadFileForm
-import re,csv
+import csv,os,glob
+
 # ^(\+91[\-\s]?)?[0]?(91)?[789]\d{9}$
 choices = []
 def handle_uploaded_file(f):  
@@ -19,7 +20,10 @@ def handle_uploaded_file(f):
 def csvtowats(request):
     if request.method == 'POST':  
         form = UploadFileForm(request.POST, request.FILES)  
-        if form.is_valid():  
+        if form.is_valid(): 
+            files = glob.glob('rasweb/website/csvtowats/upload/*')
+            for f in files:
+                os.remove(f) 
             row = handle_uploaded_file(request.FILES['file'])
             choices.append(row)  
             return redirect("csvfields")
